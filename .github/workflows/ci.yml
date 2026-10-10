@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.10', '3.13']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install .[test]
+      - run: python -m pytest
+      - name: Verify installed command
+        run: >-
+          python -c "import subprocess,json; p=subprocess.run(['split-overlap-check','examples/left.jsonl','examples/right.jsonl','--field','text'],capture_output=True,text=True); assert p.returncode==1 and p.stderr=='' and json.loads(p.stdout)['status']=='overlap', (p.returncode,p.stdout,p.stderr)"
