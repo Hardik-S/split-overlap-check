@@ -21,4 +21,4 @@ jobs:
       - run: python -m pytest
       - name: Verify installed command
         run: >-
-          python -c "import subprocess,sys; p=subprocess.run(['split-overlap-check','examples/left.jsonl','examples/right.jsonl','--field','text'],capture_output=True,text=True); assert p.returncode==1 and p.stderr=='' and p.stdout.startswith('{\"status\":\"overlap\"'), (p.returncode,p.stdout,p.stderr)"
+          python -c "import subprocess,json; p=subprocess.run(['split-overlap-check','examples/left.jsonl','examples/right.jsonl','--field','text'],capture_output=True,text=True); assert p.returncode==1 and p.stderr=='' and json.loads(p.stdout)['status']=='overlap', (p.returncode,p.stdout,p.stderr)"
